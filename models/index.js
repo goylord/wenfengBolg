@@ -1,5 +1,5 @@
 const mongoose =  require('mongoose')
-mongoose.connect('mongodb+srv://goylord:123456jkluio.@cluster0-yv7cz.mongodb.net/test?retryWrites=true', {
+mongoose.connect('更改为自己的mongodb数据库', {
     poolSize: 20,
     useCreateIndex: true,
     useNewUrlParser: true
