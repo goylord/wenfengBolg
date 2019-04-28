@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>pdf查看</title>
+</head>
+<style>
+canvas {
+  padding-bottom: 100px;
+  border: 1px solid #999;
+}
+</style>
+<body>
+
+
+<script src="./build/pdf.js"></script>
+<script>
+
+function GetQueryString(name)
+{
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+}
+
+</script>
+<script id="script">
+  var url = 'http://143.21.64.136/api/pdf?filePath=electronicBook/' + GetQueryString('filename');
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    './build/pdf.worker.js';
+  var loadingTask = pdfjsLib.getDocument(url);
+  loadingTask.promise.then(function(pdf) {
+    //
+    // Fetch the first page
+    //
+    var tempWidth = 0
+    var tempHeight = 0
+    var tempScale = 1
+    for (var i = 0; i < pdf.numPages; i++) {
+    pdf.getPage(i).then(function(page) {
+      var scale = tempScale;
+      var viewport = page.getViewport({ scale: scale, });
+      var canvas =  document.createElement('canvas');
+      var context = canvas.getContext('2d');
+      console.debug('test1--->', viewport.width, document.body.clientWidth)
+      if (tempWidth === 0 && tempHeight === 0) {
+        var scale = document.body.clientWidth/viewport.width;
+        tempScale = scale
+        var viewport = page.getViewport({ scale: scale, });
+        tempWidth = viewport.width;
+        tempHeight = viewport.height
+      }
+      canvas.width = tempWidth
+      canvas.height = tempHeight
+      document.body.appendChild(canvas);
+      //
+      // Render PDF page into canvas context
+      //
+      var renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+      };
+      page.render(renderContext);
+    });
+
+    }
+  });
+</script>
+<script>
+  // document.getElementById('code').textContent =
+  //     document.getElementById('script').text;
+</script>
+</body>
+</html>
